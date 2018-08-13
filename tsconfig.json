@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "esnext", "dom"],
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "target": "es6"
+  },
+  "compileOnSave": true
+}
