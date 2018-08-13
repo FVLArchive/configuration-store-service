@@ -20,7 +20,7 @@ export class ConfigurationStoreService implements IConfigurationStore {
   /**
    * Convert the stored value back into the desired type requested by the client
    */
-  convertData<T>(data: any, type: string): T {
+  private convertData<T>(data: any, type: string): T {
     if (type === "string") return data
     return JSON.parse(String(data))
   }
@@ -28,25 +28,29 @@ export class ConfigurationStoreService implements IConfigurationStore {
   /**
    * Prepare the value for storage
    */
-  prepareData<T>(data: T): string {
+  private prepareData<T>(data: T): string {
     if (!data || typeof data === "string") return String(data)
     return JSON.stringify(data)
   }
 
-  setData<T>(method: string, key: string, value: T): Promise<T> {
+  private setData<T>(method: string, key: string, value: T): Promise<T> {
     return this.client
       .mutate({
         variables: { key: key, value: this.prepareData(value) },
         mutation: gql`
-          mutation ${method}($key: String!, $value: String!) {
-            setGlobalData(Key: $key, Value: $value)
+          mutation set($key: String!, $value: String!) {
+            ${method}(Key: $key, Value: $value)
           }
         `
       })
-      .then(data => value)
+      .then(data => {
+        console.log("result", data)
+        return data
+      })
+      .then(data => this.convertData<T>(data.data[method], typeof value))
   }
 
-  getData<T>(method: string, key: string, defaultValue?: T): Promise<T> {
+  private getData<T>(method: string, key: string, defaultValue?: T): Promise<T> {
     return this.client
       .query({
         variables: { key: key, defaultValue: this.prepareData(defaultValue) },
@@ -56,7 +60,7 @@ export class ConfigurationStoreService implements IConfigurationStore {
           }
         `
       })
-      .then(data => this.convertData<T>(data.data["globalData"], typeof defaultValue))
+      .then(data => this.convertData<T>(data.data[method], typeof defaultValue))
   }
 
   setGlobalData<T>(key: string, value: T): Promise<T> {
