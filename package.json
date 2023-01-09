@@ -31,7 +31,7 @@
     "@fvlab/configurationstore": "^1.0.2",
     "apollo-boost": "^0.1.13",
     "cross-fetch": "^2.2.2",
-    "firebase-admin": "^5.13.1",
+    "firebase-admin": "^11.4.1",
     "graphql": "^0.13.2"
   }
 }
